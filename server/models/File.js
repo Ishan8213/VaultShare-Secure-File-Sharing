@@ -21,8 +21,14 @@ const fileSchema = new mongoose.Schema({
   requiredRole: String,
   requiredDepartment: String,
 
-  message: String, // 🆕 NEW
-
+  message: {
+    type: String,
+    default: ""
+  },
+  filePath: {
+    type: String,
+    default: null
+  },
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

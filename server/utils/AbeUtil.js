@@ -2,8 +2,8 @@ const crypto = require('crypto');
 
 exports.checkAccess = (user, file) => {
   return (
-    user.role === file.requiredRole &&
-    user.department === file.requiredDepartment
+    user.role.toLowerCase() === file.requiredRole.toLowerCase() &&
+    user.department.toLowerCase() === file.requiredDepartment.toLowerCase()
   );
 };
 

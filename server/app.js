@@ -11,6 +11,7 @@ const app = express();
 // 🔧 Middleware
 app.use(express.json());
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
 
 // 🔗 Routes
 app.use('/api/auth', authRoutes);
@@ -26,8 +27,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/nis-secure-file-sharing', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log("MongoDB Connected ✅"))
-.catch(err => console.log(err));
+  .then(() => console.log("MongoDB Connected ✅"))
+  .catch(err => console.log(err));
 
 // 🚀 Start Server
 const PORT = 5000;

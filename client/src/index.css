@@ -1455,6 +1455,126 @@ body {
   opacity: 1;
 }
 
+.upload-file-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+ 
+.upload-file-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+ 
+.upload-file-label:hover {
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.06);
+}
+ 
+.upload-file-icon {
+  flex-shrink: 0;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+}
+ 
+.upload-file-icon svg {
+  width: 15px;
+  height: 15px;
+}
+ 
+.upload-file-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-body);
+}
+ 
+.upload-file-placeholder {
+  color: var(--text-faint);
+  font-size: 13px;
+}
+ 
+.upload-file-browse {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.07);
+  border: 1px solid rgba(52, 211, 153, 0.18);
+  border-radius: 5px;
+  padding: 3px 8px;
+}
+
+/* ─── Files.jsx additions (append to index.css) ─────────────── */
+
+/* Message row inside a panel card */
+.panel-card-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: rgba(52, 211, 153, 0.05);
+  border: 1px solid rgba(52, 211, 153, 0.13);
+  border-radius: 7px;
+}
+
+.panel-card-message svg {
+  width: 13px;
+  height: 13px;
+  color: #34d399;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.panel-card-message span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #34d399;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+/* Action buttons column on the right side of a panel card */
+.panel-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: flex-end;
+}
+
+/* Green Download File button variant */
+.download-btn--green {
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.download-btn--green:hover {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
 @media (max-width: 768px) {
   .auth-split-root {
     flex-direction: column;

@@ -14,6 +14,48 @@ export default function MyFiles({ setAuth, setRole }) {
         setFiles(res.data);
     };
 
+    const downloadFile = async (id) => {
+        try {
+            const res = await API.get(`/files/download/${id}`, {
+                responseType: 'blob'
+            });
+
+            const contentDisposition = res.headers['content-disposition'];
+            let filename = 'downloaded-file';
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="?(.*)"?/);
+                if (match && match[1]) filename = match[1];
+            }
+
+            const blob = new Blob([res.data]);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (err) {
+            alert(err.response?.data?.message || 'Download failed');
+        }
+    };
+
+    const previewFile = async (id) => {
+        try {
+            const res = await API.get(`/files/download/${id}`, {
+                responseType: 'blob'
+            });
+
+            const blob = new Blob([res.data], { type: res.headers['content-type'] || 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+        } catch (err) {
+            alert(err.response?.data?.message || 'Preview failed');
+        }
+    };
+
     return (
         <div className="files-root">
             {/* <Navbar setAuth={setAuth} setRole={setRole} /> */}
@@ -38,6 +80,22 @@ export default function MyFiles({ setAuth, setRole }) {
                                         )}
                                     </div>
                                 </div>
+                                {file.filePath && (
+                                    <div className="flex gap-2 mt-3">
+                                        <button
+                                            onClick={() => previewFile(file._id)}
+                                            className="download-btn download-btn--blue"
+                                        >
+                                            Preview
+                                        </button>
+                                        <button
+                                            onClick={() => downloadFile(file._id)}
+                                            className="download-btn download-btn--green"
+                                        >
+                                            Download
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ))
                     ) : (

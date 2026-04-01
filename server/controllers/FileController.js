@@ -24,35 +24,35 @@ const { checkAccess } = require('../utils/AbeUtil');
 //   }
 // };
 
+const path = require('path');
+
 exports.uploadFile = async (req, res) => {
   try {
-    const { content, role, department, message } = req.body;
-
+    const { role, department, message } = req.body;
     const user = req.user;
 
-    // 🔒 RULES:
-    // Manager → can send to ANY department
-    // Employee → can ONLY send to their own department
-
-    if (user.role === "Employee" && user.department !== department) {
-      return res.status(403).json({
-        message: "Employees can only send files to their own department ❌"
+    if (!message && !req.file) {
+      return res.status(400).json({
+        message: "Please provide a message or file ❌"
       });
     }
 
-    const { encryptedData, key } = encrypt(content);
+    if (user.role === "Employee" && user.department !== department) {
+      return res.status(403).json({
+        message: "Employees can only send to their department ❌"
+      });
+    }
 
     await File.create({
-      filename: "file.txt",
-      encryptedData,
-      key,
-      requiredRole: role,
-      requiredDepartment: department,
-      message,
+      filename: req.file ? req.file.originalname : null,
+      filePath: req.file ? path.join('uploads', req.file.filename) : null,
+      requiredRole: role.toLowerCase(),
+      requiredDepartment: department.toLowerCase(),
+      message: message || "",
       uploadedBy: user.id
     });
 
-    res.json({ message: "File uploaded with secure policy ✅" });
+    res.json({ message: "Content shared successfully ✅" });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -63,23 +63,25 @@ exports.downloadFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
 
-    if (!file) return res.status(404).json({ message: "File not found" });
-
-    const hasAccess = checkAccess(req.user, file);
-
-    await AccessLog.create({
-      user: req.user.id,
-      file: file._id,
-      status: hasAccess ? "SUCCESS" : "DENIED"
-    });
-
-    if (!hasAccess) {
-      return res.status(403).json({ message: "Access Denied ❌" });
+    if (!file) {
+      return res.status(404).json({ message: "File not found ❌" });
     }
 
-    const decrypted = decrypt(file.encryptedData, file.key);
+    const user = req.user;
+    const isAdmin = String(user.role || '').toLowerCase() === "admin";
+    const isOwner = file.uploadedBy.toString() === user.id;
 
-    res.json({ data: decrypted });
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({
+        message: "You can only access your own files ❌"
+      });
+    }
+
+    if (file.filePath) {
+      return res.download(path.resolve(file.filePath), file.filename);
+    }
+
+    return res.json({ message: file.message });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
